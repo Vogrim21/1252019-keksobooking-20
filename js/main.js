@@ -1,10 +1,6 @@
 'use strict';
-var map = document.querySelector('.map');
-var mapPins = map.querySelector('.map__pins');
-map.classList.remove('map--faded');
-
 var COUNT = 8;
-var PIN_WIDTH = 40;
+var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
@@ -13,13 +9,17 @@ var MAX_ROOMS = 3;
 var MIN_GUESTS = 1;
 var MAX_GUESTS = 3;
 var TYPE_OF_ROOMS = ['palace', 'flat', 'house', 'bungalo'];
-var TIME = [12 + ':00', 13 + ':00', 14 + ':00'];
+var TIME = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 var MIN_COORDS_Y = 130;
 var MAX_COORDS_Y = 630;
-var MIN_COORDS_X = 50;
-var MAX_COORDS_X = document.querySelector('.map').offsetWidth - 50;
+var MIN_COORDS_X = 1;
+var MAX_COORDS_X = document.querySelector('.map').offsetWidth;
+
+var map = document.querySelector('.map');
+var mapPins = map.querySelector('.map__pins');
+map.classList.remove('map--faded');
 
 var arrayRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -72,9 +72,20 @@ var generatePin = function (pin) {
   var pinTemplate = document.querySelector('#pin').content;
   var pinElement = pinTemplate.querySelector('.map__pin').cloneNode(true);
   var pinUserAvatar = pinElement.querySelector('img');
+  var pinLocationX = pin.location.x - PIN_WIDTH + 'px';
+  var pinLocationY = pin.location.y + 'px';
 
-  var pinLocationX = (pin.location.x - PIN_WIDTH) + 'px';
-  var pinLocationY = pin.location.y - (PIN_HEIGHT / 2) + 'px';
+  if (pin.location.x < PIN_WIDTH) {
+    pinLocationX = pin.location.x + PIN_WIDTH + 'px';
+  }
+
+  if (pin.location.y < MIN_COORDS_Y) {
+    pinLocationY = pin.location.y + PIN_HEIGHT + 'px';
+  }
+
+  if (pin.location.y > MAX_COORDS_Y - MIN_COORDS_Y) {
+    pinLocationY = pin.location.y - PIN_HEIGHT + 'px';
+  }
 
   pinUserAvatar.src = pin.author.avatar;
   pinElement.style.left = pinLocationX;
