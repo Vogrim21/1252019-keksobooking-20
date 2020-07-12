@@ -3,39 +3,31 @@ var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
 map.classList.remove('map--faded');
 
-var dataHousing = {
-  PIN_WIDTH: 40,
-  PIN_HEIGHT: 70,
-
-  MIN_PRICE: 1000,
-  MAX_PRICE: 1000000,
-
-  MIN_ROOMS: 1,
-  MAX_ROOMS: 3,
-
-  MIN_GUESTS: 1,
-  MAX_GUESTS: 3,
-
-  TYPE_OF_ROOMS: ['palace', 'flat', 'house', 'bungalo'],
-  TIME: [12, 13, 14],
-  FEATURES: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'],
-
-  MIN_PHOTOS: 1,
-  MAX_PHOTOS: 3,
-
-  MIN_COORDS_Y: 130,
-  MAX_COORDS_Y: 650,
-  MIN_COORDS_X: 1,
-  MAX_COORDS_X: document.querySelector('.map').offsetWidth
-};
+var COUNT = 8;
+var PIN_WIDTH = 40;
+var PIN_HEIGHT = 70;
+var MIN_PRICE = 1000;
+var MAX_PRICE = 1000000;
+var MIN_ROOMS = 1;
+var MAX_ROOMS = 3;
+var MIN_GUESTS = 1;
+var MAX_GUESTS = 3;
+var TYPE_OF_ROOMS = ['palace', 'flat', 'house', 'bungalo'];
+var TIME = [12 + ':00', 13 + ':00', 14 + ':00'];
+var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
+var MIN_COORDS_Y = 130;
+var MAX_COORDS_Y = 630;
+var MIN_COORDS_X = 50;
+var MAX_COORDS_X = document.querySelector('.map').offsetWidth - 50;
 
 var arrayRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-var arrayRandomElement = function (massiv) {
-  var rand = Math.floor(Math.random() * massiv.length);
-  return massiv[rand];
+var arrayRandomElement = function (array) {
+  var rand = Math.floor(Math.random() * array.length);
+  return array[rand];
 };
 
 var arrayRandomLength = function (array) {
@@ -44,21 +36,11 @@ var arrayRandomLength = function (array) {
   return clone;
 };
 
-var generatePhotos = function () {
-  var photos = [];
-
-  for (var i = 1; i < arrayRandomNumber(dataHousing.MIN_PHOTOS, dataHousing.MAX_PHOTOS) + 1; i++) {
-    var photo = '' + i + '.png';
-    photos.push(photo);
-  }
-  return photos;
-};
-
-var generateData = function (count) {
+var generateAds = function (count) {
   var data = [];
   for (var i = 1; i <= count; i++) {
-    var locationX = arrayRandomNumber(dataHousing.MIN_COORDS_X, dataHousing.MAX_COORDS_X);
-    var locationY = arrayRandomNumber(dataHousing.MIN_COORDS_Y, dataHousing.MAX_COORDS_Y);
+    var locationX = arrayRandomNumber(MIN_COORDS_X, MAX_COORDS_X);
+    var locationY = arrayRandomNumber(MIN_COORDS_Y, MAX_COORDS_Y);
 
     data.push({
       author: {
@@ -67,15 +49,15 @@ var generateData = function (count) {
       offer: {
         title: 'Some title',
         address: locationX + ', ' + locationY,
-        price: arrayRandomNumber(dataHousing.MIN_PRICE, dataHousing.MAX_PRICE),
-        type: arrayRandomElement(dataHousing.TYPE_OF_ROOMS),
-        rooms: arrayRandomNumber(dataHousing.MIN_ROOMS, dataHousing.MAX_ROOMS),
-        guests: arrayRandomNumber(dataHousing.MIN_GUESTS, dataHousing.MAX_GUESTS),
-        checkin: arrayRandomElement(dataHousing.TIME) + ':00',
-        checkout: arrayRandomElement(dataHousing.TIME) + ':00',
-        features: arrayRandomLength(dataHousing.FEATURES),
+        price: arrayRandomNumber(MIN_PRICE, MAX_PRICE),
+        type: arrayRandomElement(TYPE_OF_ROOMS),
+        rooms: arrayRandomNumber(MIN_ROOMS, MAX_ROOMS),
+        guests: arrayRandomNumber(MIN_GUESTS, MAX_GUESTS),
+        checkin: arrayRandomElement(TIME),
+        checkout: arrayRandomElement(TIME),
+        features: arrayRandomLength(FEATURES),
         description: 'Some description',
-        photos: generatePhotos(),
+        photos: arrayRandomLength(PHOTOS)
       },
       location: {
         x: locationX,
@@ -91,8 +73,8 @@ var generatePin = function (pin) {
   var pinElement = pinTemplate.querySelector('.map__pin').cloneNode(true);
   var pinUserAvatar = pinElement.querySelector('img');
 
-  var pinLocationX = (pin.location.x - dataHousing.PIN_WIDTH) + 'px';
-  var pinLocationY = pin.location.y - (dataHousing.PIN_HEIGHT / 2) + 'px';
+  var pinLocationX = (pin.location.x - PIN_WIDTH) + 'px';
+  var pinLocationY = pin.location.y - (PIN_HEIGHT / 2) + 'px';
 
   pinUserAvatar.src = pin.author.avatar;
   pinElement.style.left = pinLocationX;
@@ -109,4 +91,4 @@ var generatePins = function (array) {
   mapPins.appendChild(fragment);
 };
 
-generatePins(generateData(8));
+generatePins(generateAds(COUNT));
