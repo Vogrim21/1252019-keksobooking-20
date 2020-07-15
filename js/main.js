@@ -75,17 +75,8 @@ var generatePin = function (pin) {
   var pinLocationX = pin.location.x - PIN_WIDTH + 'px';
   var pinLocationY = pin.location.y + 'px';
 
-  if (pin.location.x < PIN_WIDTH) {
-    pinLocationX = pin.location.x + PIN_WIDTH + 'px';
-  }
-
-  if (pin.location.y < MIN_COORDS_Y) {
-    pinLocationY = pin.location.y + PIN_HEIGHT + 'px';
-  }
-
-  if (pin.location.y > MAX_COORDS_Y - MIN_COORDS_Y) {
-    pinLocationY = pin.location.y - PIN_HEIGHT + 'px';
-  }
+  pinLocationX = pin.location.x - PIN_WIDTH / 2 + 'px';
+  pinLocationY = pin.location.y - PIN_HEIGHT + 'px';
 
   pinUserAvatar.src = pin.author.avatar;
   pinElement.style.left = pinLocationX;
