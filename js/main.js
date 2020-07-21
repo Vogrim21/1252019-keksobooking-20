@@ -79,6 +79,8 @@ var generateAds = function (count) {
   return data;
 };
 
+var offers = generateAds(COUNT);
+
 var generatePin = function (pin) {
   var pinTemplate = document.querySelector('#pin').content;
   var pinElement = pinTemplate.querySelector('.map__pin').cloneNode(true);
@@ -104,20 +106,50 @@ var generatePins = function (array) {
   mapPins.appendChild(fragment);
 };
 
-generatePins(generateAds(COUNT));
+var resolvePhotos = function (container, photoUrls) {
+  var photoListItemSample = container.querySelector('.popup__photo');
+  container.removeChild(photoListItemSample);
+  var photoListItems = photoUrls.map(function (url) {
+    var photoListItemElement = photoListItemSample.cloneNode(true);
+    photoListItemElement.setAttribute('src', url);
+    return photoListItemElement;
+  });
+  photoListItems.forEach(function (element) {
+    container.appendChild(element);
+  });
+};
 
-var createCard = function (dto) {
+var resolveFeatures = function (container, features) {
+  var createTestKeywordsExistenceFunc = function (keywords) {
+    var reString = keywords.join('|');
+    var re = new RegExp(reString);
+    return function testKeywordsExistenceFunc(string) {
+      return re.test(string);
+    };
+  };
+  var testKeywordsExistence = createTestKeywordsExistenceFunc(features);
+  var filterNotMathedFeatureElements = function (element) {
+    var className = element.className;
+    return !testKeywordsExistence(className);
+  };
+  var notPresentFeatureElements = Array.from(container.children).filter(filterNotMathedFeatureElements);
+  notPresentFeatureElements.forEach(function (element) {
+    container.removeChild(element);
+  });
+};
+
+var createCard = function (add) {
   var card = template.cloneNode(true);
-  var offer = dto.offer;
+  var offer = add.offer;
 
-  card.querySelector('.popup__avatar').setAttribute('src', dto.author.avatar);
+  card.querySelector('.popup__avatar').setAttribute('src', add.author.avatar);
   card.querySelector('.popup__title').textContent = offer.title;
   card.querySelector('.popup__text--address').textContent = offer.address;
   card.querySelector('.popup__text--price').innerHTML = offer.price + ' &#x20bd;<span>/ночь</span>';
   card.querySelector('.popup__type').textContent = propertyType[offer.type];
   card.querySelector('.popup__text--capacity').textContent =
-    offer.rooms + ' ' + resolveDeclensionRoomsWord(offer.rooms) +
-    ' для ' + offer.guests + ' ' + resolveDeclensionGuestWord(offer.guests);
+    offer.rooms + ' ' + 'комнат' +
+    ' для ' + offer.guests + ' ' + 'гостей';
   card.querySelector('.popup__text--time').textContent =
     'Заезд после ' + offer.checkin + ', выезд до ' + offer.checkout;
 
@@ -139,57 +171,8 @@ var createCard = function (dto) {
     photosContainer.hidden = true;
   }
 
-  function resolveFeatures(container, features) {
-    var testKeywordsExistence = createTestKeywordsExistenceFunc(features);
-    var filterNotMathedFeatureElements = function (element) {
-      var className = element.className;
-      return !testKeywordsExistence(className);
-    };
-    var notPresentFeatureElements = Array.from(container.children).filter(filterNotMathedFeatureElements);
-    notPresentFeatureElements.forEach(function (element) {
-      container.removeChild(element);
-    });
-
-    function createTestKeywordsExistenceFunc(keywords) {
-      var reString = keywords.join('|');
-      var re = new RegExp(reString);
-      return function testKeywordsExistenceFunc(string) {
-        return re.test(string);
-      };
-    }
-  }
-
-  function resolvePhotos(container, photoUrls) {
-    var photoListItemSample = container.querySelector('.popup__photo');
-    container.removeChild(photoListItemSample);
-    var photoListItems = photoUrls.map(function (url) {
-      var photoListItemElement = photoListItemSample.cloneNode(true);
-      photoListItemElement.setAttribute('src', url);
-      return photoListItemElement;
-    });
-    photoListItems.forEach(function (element) {
-      container.appendChild(element);
-    });
-  }
-
-  function resolveDeclensionRoomsWord(number) {
-    if (number >= 10 && number <= 20) {
-      return 'комнат';
-    }
-
-    var remainder = number % 10;
-    if (remainder === 1) {
-      return 'комната';
-    } else if (remainder >= 2 && remainder <= 4) {
-      return 'комнаты';
-    } else {
-      return 'комнат';
-    }
-  }
-
-  function resolveDeclensionGuestWord(number) {
-    return (number % 10 === 1) ? 'гостя' : 'гостей';
-  }
+  return card;
 };
 
-map.appendChild(createCard(generateAds));
+generatePins(offers);
+map.appendChild(createCard(offers[0]));
