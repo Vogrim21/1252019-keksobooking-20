@@ -106,6 +106,26 @@ var generatePins = function (array) {
   mapPins.appendChild(fragment);
 };
 
+var resolveFeatures = function (container, features) {
+  var createTestKeywordsExistenceFunc = function (keywords) {
+    var reString = keywords.join('|');
+    var re = new RegExp(reString);
+    return function testKeywordsExistenceFunc(string) {
+      return re.test(string);
+    };
+  };
+
+  var testKeywordsExistence = createTestKeywordsExistenceFunc(features);
+  var filterNotMathedFeatureElements = function (element) {
+    var className = element.className;
+    return !testKeywordsExistence(className);
+  };
+  var notPresentFeatureElements = Array.from(container.children).filter(filterNotMathedFeatureElements);
+  notPresentFeatureElements.forEach(function (element) {
+    container.removeChild(element);
+  });
+};
+
 var resolvePhotos = function (container, photoUrls) {
   var photoListItemSample = container.querySelector('.popup__photo');
   container.removeChild(photoListItemSample);
@@ -116,25 +136,6 @@ var resolvePhotos = function (container, photoUrls) {
   });
   photoListItems.forEach(function (element) {
     container.appendChild(element);
-  });
-};
-
-var resolveFeatures = function (container, features) {
-  var createTestKeywordsExistenceFunc = function (keywords) {
-    var reString = keywords.join('|');
-    var re = new RegExp(reString);
-    return function testKeywordsExistenceFunc(string) {
-      return re.test(string);
-    };
-  };
-  var testKeywordsExistence = createTestKeywordsExistenceFunc(features);
-  var filterNotMathedFeatureElements = function (element) {
-    var className = element.className;
-    return !testKeywordsExistence(className);
-  };
-  var notPresentFeatureElements = Array.from(container.children).filter(filterNotMathedFeatureElements);
-  notPresentFeatureElements.forEach(function (element) {
-    container.removeChild(element);
   });
 };
 
