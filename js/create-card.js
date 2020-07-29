@@ -32,7 +32,7 @@
     if (offer.features && offer.features.length > 0) {
       resolveFeatures(featuresContainer, offer.features);
     } else {
-      featuresContainer.hidden = true;
+      featuresContainer.classList.add('hidden');
     }
 
     if (offer.description) {
@@ -43,7 +43,7 @@
     if (offer.photos && offer.photos.length > 0) {
       resolvePhotos(photosContainer, offer.photos);
     } else {
-      photosContainer.hidden = true;
+      photosContainer.classList.add('hidden');
     }
 
     card.querySelector('.popup__close').addEventListener('click', function () {
@@ -98,6 +98,7 @@
         photoListItemElement.setAttribute('src', url);
         return photoListItemElement;
       });
+
       photoListItems.forEach(function (element) {
         container.appendChild(element);
       });
