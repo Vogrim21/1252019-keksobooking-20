@@ -163,17 +163,20 @@
 
     avatarInput.addEventListener('change', function (evt) {
       var file = evt.target.files[0];
-      var fileName = file.name.toLowerCase();
-      var matches = FILE_TYPES.some(function (it) {
-        return fileName.endsWith(it);
-      });
-      if (matches) {
-        var avatarReader = new FileReader();
-        avatarReader.addEventListener('load', function () {
-          avatarPreview.src = avatarReader.result;
+      if (file) {
+        evt.target.setCustomValidity('');
+        var fileName = file.name.toLowerCase();
+        var matches = FILE_TYPES.some(function (it) {
+          return fileName.endsWith(it);
         });
+        if (matches) {
+          var avatarReader = new FileReader();
+          avatarReader.addEventListener('load', function () {
+            avatarPreview.src = avatarReader.result;
+          });
 
-        avatarReader.readAsDataURL(file);
+          avatarReader.readAsDataURL(file);
+        }
       }
     });
   }
@@ -236,7 +239,7 @@
 
   function initPriceInput() {
     setPriceInputBoundsAccordingPropType(typeInput.value);
-    priceInput.addEventListener('invalid', function (evt) {
+    priceInput.addEventListener('input', function (evt) {
       var target = evt.target;
       var validity = evt.target.validity;
 

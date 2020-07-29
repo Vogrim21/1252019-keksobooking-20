@@ -268,6 +268,11 @@
       Network.load(function (err, noticesArr) {
         if (err) {
           // стоило бы сообщить пользователю об ошибке, но в ТЗ не указано как обрабатывать такую ошибку
+          var errEvent = new CustomEvent(window.NoticeForm.SUBMIT_ERROR_EVENT_TYPE, {
+            detail: 'Не удалось загрузить пины'
+          });
+          document.dispatchEvent(errEvent);
+          deactivatePage();
         } else {
           notices = noticesArr;
           if (notices.length !== 0) {
