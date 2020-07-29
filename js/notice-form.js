@@ -4,6 +4,9 @@
   var SUBMIT_ERROR_EVENT_TYPE = 'submitform-error';
   var DISABLED_CLASSNAME = 'ad-form--disabled';
 
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+  var MIN_NAME_LENGTH = 30;
+  var MAX_NAME_LENGTH = 100;
   var PRICE_MAX = 1000000;
   var NOT_FOR_GUESTS_OPTION_VALUE = '0';
   var NOT_FOR_GUESTS_ROOMS_NUMBER = 100;
@@ -72,19 +75,6 @@
     });
   });
 
-  var avatarReader = new FileReader();
-  avatarReader.addEventListener('load', function () {
-    avatarPreview.src = avatarReader.result;
-  });
-
-  var housingImageReader = new FileReader();
-  housingImageReader.addEventListener('load', function () {
-    housingPreviewContainer.innerHTML = '<img src="" alt="">';
-    var housingPreview = document.querySelector('.ad-form__photo img');
-    housingPreview.src = housingImageReader.result;
-  });
-
-
   window.NoticeForm = {
     SUBMIT_EVENT_TYPE: SUBMIT_EVENT_TYPE,
     SUBMIT_ERROR_EVENT_TYPE: SUBMIT_ERROR_EVENT_TYPE,
@@ -140,20 +130,22 @@
   }
 
   function initImagesInput() {
-    imagesInput.addEventListener('invalid', function (evt) {
-      var target = evt.target;
-      var validity = target.validity;
-
-      if (validity.valueMissing) {
-        target.setCustomValidity('Загрузите фотографию жилья');
-      } else {
-        target.setCustomValidity('');
-      }
-    });
-
     imagesInput.addEventListener('change', function (evt) {
       var file = evt.target.files[0];
-      housingImageReader.readAsDataURL(file);
+      var fileName = file.name.toLowerCase();
+      var matches = FILE_TYPES.some(function (it) {
+        return fileName.endsWith(it);
+      });
+
+      if (matches) {
+        var housingImageReader = new FileReader();
+        housingImageReader.addEventListener('load', function () {
+          housingPreviewContainer.innerHTML = '<img src="" alt="" width="70" height="70">';
+          var housingPreview = document.querySelector('.ad-form__photo img');
+          housingPreview.src = housingImageReader.result;
+        });
+        housingImageReader.readAsDataURL(file);
+      }
     });
   }
 
@@ -171,7 +163,18 @@
 
     avatarInput.addEventListener('change', function (evt) {
       var file = evt.target.files[0];
-      avatarReader.readAsDataURL(file);
+      var fileName = file.name.toLowerCase();
+      var matches = FILE_TYPES.some(function (it) {
+        return fileName.endsWith(it);
+      });
+      if (matches) {
+        var avatarReader = new FileReader();
+        avatarReader.addEventListener('load', function () {
+          avatarPreview.src = avatarReader.result;
+        });
+
+        avatarReader.readAsDataURL(file);
+      }
     });
   }
 
@@ -210,24 +213,23 @@
   }
 
   function initTitleInput() {
-    titleInput.addEventListener('invalid', function (evt) {
-      var target = evt.target;
-      var validity = target.validity;
-      var minLength = target.minLength;
-      var maxLength = target.maxLength;
+    titleInput.addEventListener('invalid', function () {
+      if (titleInput.validity.valueMissing) {
+        titleInput.setCustomValidity('Обязательное поле');
+      } else {
+        titleInput.setCustomValidity('');
+      }
+    });
 
-      switch (true) {
-        case validity.tooShort:
-          target.setCustomValidity('Минимальная длина — ' + minLength + ' символов');
-          break;
-        case validity.tooLong:
-          target.setCustomValidity('Максимальная длина — ' + maxLength + ' символов.');
-          break;
-        case validity.valueMissing:
-          target.setCustomValidity('Обязательное поле');
-          break;
-        default:
-          target.setCustomValidity('');
+    titleInput.addEventListener('input', function () {
+      var valueLength = titleInput.value.length;
+
+      if (valueLength < MIN_NAME_LENGTH) {
+        titleInput.setCustomValidity('Ещё ' + (MIN_NAME_LENGTH - valueLength) + ' симв.');
+      } else if (valueLength > MAX_NAME_LENGTH) {
+        titleInput.setCustomValidity('Удалите лишние ' + (valueLength - MAX_NAME_LENGTH) + ' симв.');
+      } else {
+        titleInput.setCustomValidity('');
       }
     });
   }

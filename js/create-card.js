@@ -55,7 +55,8 @@
     return card;
 
     function documentEscapeKeydownHandler(evt) {
-      if (evt.code === ESCAPE_KEY_CODE) {
+      if (evt.key === ESCAPE_KEY_CODE) {
+        evt.preventDefault();
         removeCard();
       }
     }
